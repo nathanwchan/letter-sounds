@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react"
+import { useState, useCallback, useEffect, useRef, useMemo } from "react"
 import { ArrowRight, ArrowLeft, RotateCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -8,7 +8,18 @@ const LETTER_SOUNDS = [
   {
     letters: "b",
     sound: "b",
-    examples: ["ball", "big", "box", "bear", "blue", "bird", "book", "baby", "bus", "bike", "bed", "boy", "bag", "bee"],
+    examples: [
+      "ball",
+      "big",
+      "box",
+      "bear",
+      "blue",
+      "bird",
+      "book",
+      "baby",
+      "bus",
+      "boy"
+    ]
   },
   {
     letters: "d",
@@ -21,14 +32,10 @@ const LETTER_SOUNDS = [
       "door",
       "day",
       "doll",
-      "desk",
       "dish",
-      "dance",
       "draw",
-      "drum",
-      "doll",
-      "drink",
-    ],
+      "drum"
+    ]
   },
   {
     letters: "f",
@@ -40,15 +47,11 @@ const LETTER_SOUNDS = [
       "fox",
       "food",
       "foot",
-      "face",
-      "five",
       "frog",
       "fire",
       "farm",
-      "fall",
-      "flower",
-      "fly",
-    ],
+      "flower"
+    ]
   },
   {
     letters: "g",
@@ -56,19 +59,15 @@ const LETTER_SOUNDS = [
     examples: [
       "got",
       "get",
-      "go",
       "girl",
       "good",
       "game",
       "give",
-      "green",
       "goat",
       "grass",
-      "grow",
       "gift",
-      "gold",
-      "gum",
-    ],
+      "gum"
+    ]
   },
   {
     letters: "h",
@@ -79,16 +78,12 @@ const LETTER_SOUNDS = [
       "hen",
       "hand",
       "home",
-      "hair",
       "hill",
-      "heart",
       "horse",
       "happy",
       "house",
-      "hug",
-      "hop",
-      "hide",
-    ],
+      "hug"
+    ]
   },
   {
     letters: "j",
@@ -100,15 +95,11 @@ const LETTER_SOUNDS = [
       "jar",
       "jelly",
       "jacket",
-      "jog",
-      "jungle",
-      "jeans",
       "jet",
-      "job",
-      "jug",
-      "join",
       "joy",
-    ],
+      "job",
+      "join"
+    ]
   },
   {
     letters: "k",
@@ -120,14 +111,11 @@ const LETTER_SOUNDS = [
       "king",
       "kiss",
       "kick",
-      "kind",
       "keep",
-      "koala",
-      "kitchen",
       "kitten",
-      "kangaroo",
-      "ketchup",
-    ],
+      "koala",
+      "kind"
+    ]
   },
   {
     letters: "l",
@@ -137,17 +125,13 @@ const LETTER_SOUNDS = [
       "leg",
       "log",
       "lamp",
-      "love",
-      "leaf",
       "lion",
       "lemon",
       "laugh",
       "light",
-      "long",
       "little",
-      "look",
-      "like",
-    ],
+      "look"
+    ]
   },
   {
     letters: "m",
@@ -161,18 +145,25 @@ const LETTER_SOUNDS = [
       "milk",
       "mouse",
       "mouth",
-      "money",
-      "music",
       "monkey",
-      "mango",
-      "me",
-      "my",
-    ],
+      "music"
+    ]
   },
   {
     letters: "n",
     sound: "n",
-    examples: ["net", "nap", "not", "new", "nose", "nut", "nine", "nest", "night", "name", "neck", "no", "now", "nice"],
+    examples: [
+      "net",
+      "nap",
+      "not",
+      "nose",
+      "nut",
+      "nest",
+      "night",
+      "name",
+      "now",
+      "nice"
+    ]
   },
   {
     letters: "p",
@@ -186,13 +177,9 @@ const LETTER_SOUNDS = [
       "park",
       "pink",
       "play",
-      "push",
-      "pear",
-      "pizza",
-      "paper",
       "pencil",
-      "puppy",
-    ],
+      "puppy"
+    ]
   },
   {
     letters: "r",
@@ -206,13 +193,9 @@ const LETTER_SOUNDS = [
       "read",
       "rose",
       "rabbit",
-      "river",
-      "road",
-      "rice",
       "ring",
-      "rope",
-      "rug",
-    ],
+      "rope"
+    ]
   },
   {
     letters: "s",
@@ -220,19 +203,15 @@ const LETTER_SOUNDS = [
     examples: [
       "sit",
       "sun",
-      "see",
-      "say",
       "sand",
-      "star",
       "sock",
       "sing",
       "smile",
       "snow",
       "sleep",
       "school",
-      "spoon",
-      "swim",
-    ],
+      "swim"
+    ]
   },
   {
     letters: "t",
@@ -244,15 +223,11 @@ const LETTER_SOUNDS = [
       "toy",
       "tree",
       "time",
-      "talk",
-      "tall",
       "tiger",
       "table",
-      "tooth",
       "train",
-      "turtle",
-      "toes",
-    ],
+      "turtle"
+    ]
   },
   {
     letters: "v",
@@ -260,19 +235,15 @@ const LETTER_SOUNDS = [
     examples: [
       "van",
       "very",
-      "vest",
-      "voice",
-      "visit",
-      "vase",
       "vet",
-      "vote",
-      "vine",
-      "vegetable",
-      "vacuum",
-      "valley",
-      "vanilla",
+      "voice",
       "violin",
-    ],
+      "visit",
+      "vest",
+      "vase",
+      "vine",
+      "volcano"
+    ]
   },
   {
     letters: "w",
@@ -280,19 +251,15 @@ const LETTER_SOUNDS = [
     examples: [
       "wet",
       "win",
-      "way",
       "walk",
       "water",
       "wind",
       "wood",
       "watch",
       "wave",
-      "window",
       "wish",
-      "wolf",
-      "wheel",
-      "wall",
-    ],
+      "wall"
+    ]
   },
   {
     letters: "y",
@@ -306,13 +273,9 @@ const LETTER_SOUNDS = [
       "yawn",
       "yell",
       "young",
-      "yolk",
-      "yogurt",
-      "yak",
-      "yarn",
       "yummy",
-      "yoyo",
-    ],
+      "yoyo"
+    ]
   },
   {
     letters: "z",
@@ -320,19 +283,15 @@ const LETTER_SOUNDS = [
     examples: [
       "zip",
       "zoo",
+      "zebra",
+      "zoom",
       "zero",
-      "zebra",
-      "zap",
-      "zoom",
-      "zone",
       "zigzag",
-      "zipper",
-      "zucchini",
-      "zebra",
-      "zoo",
-      "zoom",
       "zap",
-    ],
+      "zipper",
+      "zone",
+      "zillion"
+    ]
   },
   {
     letters: "th",
@@ -341,18 +300,14 @@ const LETTER_SOUNDS = [
       "this",
       "that",
       "them",
-      "there",
-      "then",
-      "these",
-      "those",
-      "think",
       "three",
       "thumb",
-      "throw",
       "thank",
-      "thirsty",
-      "thunder",
-    ],
+      "thing",
+      "think",
+      "throw",
+      "those"
+    ]
   },
   {
     letters: "sh",
@@ -366,13 +321,9 @@ const LETTER_SOUNDS = [
       "dish",
       "brush",
       "wash",
-      "shine",
-      "shade",
-      "shape",
-      "share",
       "sheep",
-      "shower",
-    ],
+      "shower"
+    ]
   },
   {
     letters: "ch",
@@ -385,14 +336,10 @@ const LETTER_SOUNDS = [
       "cheese",
       "chicken",
       "church",
-      "beach",
-      "teach",
-      "reach",
       "lunch",
-      "march",
       "catch",
-      "watch",
-    ],
+      "watch"
+    ]
   },
   {
     letters: "ng",
@@ -400,19 +347,15 @@ const LETTER_SOUNDS = [
     examples: [
       "ring",
       "sing",
-      "long",
       "king",
       "song",
       "wing",
-      "bring",
-      "spring",
-      "strong",
-      "young",
       "hang",
       "swing",
       "thing",
-      "string",
-    ],
+      "long",
+      "bang"
+    ]
   },
   {
     letters: "wh",
@@ -423,39 +366,39 @@ const LETTER_SOUNDS = [
       "why",
       "where",
       "which",
-      "while",
       "white",
       "whale",
       "wheel",
-      "whisper",
       "whistle",
-      "whisk",
-      "whip",
-      "whirl",
-    ],
+      "while"
+    ]
   },
   {
     letters: "ph",
     sound: "f",
     examples: [
-      "photo",
       "dolphin",
       "elephant",
-      "alphabet",
-      "graph",
-      "nephew",
-      "pharmacy",
-      "sphere",
-      "trophy",
+      "phone",
       "photo",
-      "dolphin",
-      "elephant",
-    ],
+      "alphabet"
+    ]
   },
   {
     letters: "a",
     sound: "æ",
-    examples: ["cat", "hat", "map", "tap", "apple", "ant", "ask", "add", "and", "at", "as", "am", "animal", "answer"],
+    examples: [
+      "cat",
+      "hat",
+      "map",
+      "apple",
+      "ant",
+      "ask",
+      "add",
+      "and",
+      "am",
+      "animal"
+    ]
   },
   {
     letters: "e",
@@ -467,20 +410,27 @@ const LETTER_SOUNDS = [
       "pet",
       "egg",
       "end",
-      "else",
-      "every",
-      "empty",
-      "enter",
-      "exit",
-      "echo",
-      "elf",
-      "edge",
-    ],
+      "web",
+      "led",
+      "let",
+      "men"
+    ]
   },
   {
     letters: "i",
     sound: "i",
-    examples: ["pin", "hit", "sit", "big", "in", "is", "it", "if", "ink", "ill", "inch", "insect", "igloo", "itch"],
+    examples: [
+      "zipper",
+      "sister",
+      "spin",
+      "stick",
+      "kitten",
+      "little",
+      "dinner",
+      "finish",
+      "winter",
+      "sniff"
+    ]
   },
   {
     letters: "o",
@@ -488,19 +438,15 @@ const LETTER_SOUNDS = [
     examples: [
       "hot",
       "pot",
-      "lot",
-      "got",
       "on",
       "off",
       "odd",
       "ox",
       "octopus",
-      "olive",
       "orange",
-      "office",
-      "otter",
-      "ostrich",
-    ],
+      "pop",
+      "lock"
+    ]
   },
   {
     letters: "u",
@@ -512,15 +458,11 @@ const LETTER_SOUNDS = [
       "cut",
       "us",
       "under",
-      "ugly",
       "umbrella",
       "uncle",
-      "until",
-      "umpire",
-      "udder",
-      "utter",
       "upset",
-    ],
+      "mud"
+    ]
   },
   {
     letters: "a_e",
@@ -532,15 +474,11 @@ const LETTER_SOUNDS = [
       "late",
       "face",
       "race",
-      "space",
-      "brave",
-      "cave",
-      "save",
       "wave",
-      "date",
       "gate",
       "plate",
-    ],
+      "came"
+    ]
   },
   {
     letters: "ee",
@@ -551,16 +489,12 @@ const LETTER_SOUNDS = [
       "tree",
       "meet",
       "bee",
-      "free",
       "three",
       "green",
       "sleep",
-      "deep",
-      "keep",
-      "seed",
       "need",
-      "feed",
-    ],
+      "feed"
+    ]
   },
   {
     letters: "i_e",
@@ -572,15 +506,11 @@ const LETTER_SOUNDS = [
       "time",
       "five",
       "ride",
-      "side",
-      "wide",
       "smile",
-      "while",
-      "mile",
-      "line",
-      "fine",
       "nine",
-    ],
+      "line",
+      "slide"
+    ]
   },
   {
     letters: "o_e",
@@ -588,19 +518,15 @@ const LETTER_SOUNDS = [
     examples: [
       "bone",
       "home",
-      "note",
-      "rope",
       "nose",
       "rose",
-      "close",
-      "those",
+      "rope",
       "stone",
-      "alone",
       "hope",
-      "vote",
-      "code",
-      "rode",
-    ],
+      "cone",
+      "hole",
+      "joke"
+    ]
   },
   {
     letters: "u_e",
@@ -611,16 +537,12 @@ const LETTER_SOUNDS = [
       "use",
       "cute",
       "huge",
-      "mute",
-      "flute",
       "rule",
       "june",
-      "prune",
       "rude",
-      "dune",
-      "fume",
-      "plume",
-    ],
+      "flute",
+      "tune"
+    ]
   },
   {
     letters: "ar",
@@ -635,32 +557,24 @@ const LETTER_SOUNDS = [
       "bark",
       "dark",
       "farm",
-      "hard",
-      "jar",
-      "mark",
-      "part",
-      "sharp",
-    ],
+      "jar"
+    ]
   },
   {
     letters: "er",
     sound: "er",
     examples: [
       "her",
-      "term",
-      "verb",
-      "serve",
-      "fern",
-      "herd",
-      "perch",
-      "were",
-      "germ",
-      "jerk",
-      "clerk",
       "sister",
       "water",
       "letter",
-    ],
+      "teacher",
+      "mother",
+      "father",
+      "brother",
+      "other",
+      "never"
+    ]
   },
   {
     letters: "ir",
@@ -669,18 +583,14 @@ const LETTER_SOUNDS = [
       "bird",
       "girl",
       "shirt",
-      "first",
       "dirt",
-      "firm",
       "stir",
-      "third",
       "skirt",
-      "birth",
-      "sir",
-      "circle",
-      "thirty",
       "thirsty",
-    ],
+      "circle",
+      "birthday",
+      "sir"
+    ]
   },
   {
     letters: "or",
@@ -689,18 +599,14 @@ const LETTER_SOUNDS = [
       "corn",
       "for",
       "fork",
-      "born",
       "horse",
-      "north",
       "short",
       "storm",
-      "torch",
-      "porch",
-      "sport",
-      "sort",
-      "port",
       "morning",
-    ],
+      "north",
+      "porch",
+      "forest"
+    ]
   },
   {
     letters: "ur",
@@ -712,15 +618,11 @@ const LETTER_SOUNDS = [
       "surf",
       "curl",
       "fur",
-      "nurse",
-      "purse",
-      "burst",
-      "curve",
-      "curb",
-      "blur",
       "purple",
       "turtle",
-    ],
+      "nurse",
+      "purse"
+    ]
   },
   {
     letters: "oo",
@@ -728,19 +630,15 @@ const LETTER_SOUNDS = [
     examples: [
       "book",
       "look",
-      "took",
       "cook",
       "foot",
       "good",
-      "hood",
       "wood",
-      "stood",
-      "wool",
-      "hook",
-      "shook",
       "cookie",
-      "looking",
-    ],
+      "hook",
+      "took",
+      "wool"
+    ]
   },
   {
     letters: "oo",
@@ -751,16 +649,12 @@ const LETTER_SOUNDS = [
       "cool",
       "room",
       "boot",
-      "root",
-      "soon",
       "zoo",
-      "pool",
-      "roof",
       "spoon",
-      "broom",
       "school",
       "tooth",
-    ],
+      "pool"
+    ]
   },
   {
     letters: "ow",
@@ -772,15 +666,11 @@ const LETTER_SOUNDS = [
       "down",
       "town",
       "brown",
-      "crowd",
-      "crown",
       "flower",
-      "power",
-      "towel",
       "owl",
-      "bow",
       "wow",
-    ],
+      "bow"
+    ]
   },
   {
     letters: "oy",
@@ -789,46 +679,73 @@ const LETTER_SOUNDS = [
       "boy",
       "toy",
       "joy",
-      "enjoy",
       "royal",
       "oyster",
       "soy",
       "ahoy",
       "annoy",
       "employ",
-      "destroy",
-      "loyal",
-      "boy",
-      "toy",
-    ],
-  },
+      "loyal"
+    ]
+  }
 ]
 
 export default function LetterSoundCard() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [displayedWords, setDisplayedWords] = useState<string[]>([])
-  const [past, setPast] = useState<number[]>([])
-  const [future, setFuture] = useState<number[]>([])
+  const [seenIndices, setSeenIndices] = useState<number[]>([])
   const [isWrapped, setIsWrapped] = useState(false)
   const wordsContainerRef = useRef<HTMLDivElement>(null)
 
-  const getRandomIndex = useCallback((exclude: number) => {
-    let newIndex
-    do {
-      newIndex = Math.floor(Math.random() * LETTER_SOUNDS.length)
-    } while (newIndex === exclude)
-    return newIndex
-  }, [])
+  // Fisher-Yates shuffle algorithm
+  const shuffleArray = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
+
+  // Create a memoized shuffled array of indices
+  const shuffledIndices = useMemo(
+    () => shuffleArray([...Array(LETTER_SOUNDS.length).keys()]),
+    [LETTER_SOUNDS.length], // Added LETTER_SOUNDS.length as a dependency
+  )
+
+  const getNextIndex = useCallback(() => {
+    if (seenIndices.length === LETTER_SOUNDS.length) {
+      // All letter sounds have been seen, reset and reshuffle
+      setSeenIndices([])
+      return shuffledIndices[0]
+    }
+
+    for (const index of shuffledIndices) {
+      if (!seenIndices.includes(index)) {
+        return index
+      }
+    }
+
+    // This should never happen, but TypeScript wants a return statement
+    return 0
+  }, [seenIndices, shuffledIndices])
 
   const updateDisplayedWords = useCallback((index: number) => {
     const allWords = LETTER_SOUNDS[index].examples
-    const newWords = allWords.sort(() => 0.5 - Math.random()).slice(0, 5)
+    const newWords = shuffleArray([...allWords]).slice(0, 5)
     setDisplayedWords(newWords)
   }, [])
 
   const rotateWords = useCallback(() => {
     updateDisplayedWords(currentIndex)
   }, [currentIndex, updateDisplayedWords])
+
+  useEffect(() => {
+    // Initialize with a random letter sound
+    const initialIndex = getNextIndex()
+    setCurrentIndex(initialIndex)
+    setSeenIndices([initialIndex])
+    updateDisplayedWords(initialIndex)
+  }, [])
 
   useEffect(() => {
     updateDisplayedWords(currentIndex)
@@ -849,7 +766,7 @@ export default function LetterSoundCard() {
     checkIfWrapped()
     window.addEventListener("resize", checkIfWrapped)
     return () => window.removeEventListener("resize", checkIfWrapped)
-  }, [])
+  }, [displayedWords])
 
   const playWord = (word: string) => {
     const utterance = new SpeechSynthesisUtterance(word)
@@ -860,24 +777,18 @@ export default function LetterSoundCard() {
   }
 
   const next = () => {
-    if (future.length > 0) {
-      const nextIndex = future[0]
-      setPast((prev) => [...prev, currentIndex])
-      setCurrentIndex(nextIndex)
-      setFuture((prev) => prev.slice(1))
-    } else {
-      const newIndex = getRandomIndex(currentIndex)
-      setPast((prev) => [...prev, currentIndex])
-      setCurrentIndex(newIndex)
-    }
+    const nextIndex = getNextIndex()
+    setCurrentIndex(nextIndex)
+    setSeenIndices((prev) => [...prev, nextIndex])
+    updateDisplayedWords(nextIndex)
   }
 
   const back = () => {
-    if (past.length > 0) {
-      const previousIndex = past[past.length - 1]
-      setFuture((prev) => [currentIndex, ...prev])
+    if (seenIndices.length > 1) {
+      const previousIndex = seenIndices[seenIndices.length - 2]
       setCurrentIndex(previousIndex)
-      setPast((prev) => prev.slice(0, -1))
+      setSeenIndices((prev) => prev.slice(0, -1))
+      updateDisplayedWords(previousIndex)
     }
   }
 
@@ -893,53 +804,51 @@ export default function LetterSoundCard() {
     <div className="space-y-8">
       <div className="rounded-lg bg-primary/5 p-6 pb-4">
         <div className="text-center">
-          <div className="text-8xl font-bold mb-4">
-            {LETTER_SOUNDS[currentIndex].letters.split("_").map((part, index) => (
-              <span key={index}>
-                {part}
-                {index === 0 && LETTER_SOUNDS[currentIndex].letters.includes("_") && (
-                  <span className="text-4xl align-top">...</span>
-                )}
-              </span>
-            ))}
+          <div className="mb-4">
+            <div className="text-8xl font-bold inline-block">
+              {LETTER_SOUNDS[currentIndex].letters.split("_").map((part, index) => (
+                <span key={index}>
+                  {part}
+                  {index === 0 && LETTER_SOUNDS[currentIndex].letters.includes("_") && (
+                    <span className="text-4xl align-top">...</span>
+                  )}
+                </span>
+              ))}
+            </div>
           </div>
           <div className="text-sm text-muted-foreground my-6 h-5">{getSoundDisplay()}</div>
           <div
             ref={wordsContainerRef}
             className={`flex flex-wrap gap-x-2 gap-y-2 justify-center ${
               isWrapped ? "items-start" : "items-center"
-            } h-[5rem] overflow-hidden py-2 px-4`}
+            } h-[6rem] overflow-hidden py-2 px-4 pb-4`}
           >
             {displayedWords.map((example, index) => (
               <button
                 key={index}
                 onClick={() => playWord(example)}
-                className="bg-background hover:bg-accent hover:text-accent-foreground rounded-full px-3 py-1 text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className="bg-background hover:bg-accent hover:text-accent-foreground rounded-full px-3 py-1.5 text-base border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 {example}
               </button>
             ))}
             <button
               onClick={rotateWords}
-              className="bg-background hover:bg-accent hover:text-accent-foreground rounded-full p-1 text-sm border transition-colors focus:outline-none"
+              className="bg-background hover:bg-accent hover:text-accent-foreground rounded-full p-1.5 text-base border transition-colors focus:outline-none self-center"
               aria-label="Show new words"
             >
-              <RotateCw className="h-3 w-3" />
+              <RotateCw className="h-4 w-4" />
             </button>
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <Button onClick={back} className="w-14 h-14 p-0" disabled={past.length === 0}>
+        <Button onClick={back} className="w-14 h-14 p-0" disabled={seenIndices.length <= 1}>
           <ArrowLeft className="h-6 w-6" />
           <span className="sr-only">Back</span>
         </Button>
-        <Button
-          onClick={next}
-          className="flex-1 h-14"
-          disabled={future.length === 0 && past.length === LETTER_SOUNDS.length - 1}
-        >
+        <Button onClick={next} className="flex-1 h-14">
           <ArrowRight className="h-6 w-6 mr-2" />
           Next
         </Button>
